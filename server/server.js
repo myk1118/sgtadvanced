@@ -4,8 +4,6 @@ const server = express();
 
 server.use(express.static( __dirname + '/html' ));
 
-
-
 var insults = [
     'Your father smelt of elderberries',
     'You program on an altaire',

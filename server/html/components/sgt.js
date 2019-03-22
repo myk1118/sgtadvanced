@@ -264,9 +264,9 @@ class SGT_template{
 
 	getDataFromServer(){
 		var getServerData = {
-			url: 'api/grades',
+			url: '/api/grades',
 			method: 'get',
-			data: {'api_key': 'bDGvisalij'},
+			// data: {'api_key': 'bDGvisalij'},
 			dataType: 'json',
 			success: this.getDataSuccess,
 			error: this.handleError
@@ -303,10 +303,10 @@ class SGT_template{
 
 	sendDataToServer(name, course, grade){
 		var sendData = {
-			url: 'http://s-apis.learningfuze.com/sgt/create',
+			url: '/api/grades',
 			method: 'post',
 			data: {
-				'api_key': 'bDGvisalij',
+				// 'api_key': 'bDGvisalij',
 				'name': name,
 				'course': course,
 				'grade': grade
@@ -331,12 +331,12 @@ class SGT_template{
 
 	serverDataDelete(id){
 		var deleteData = {
-			url: 'http://s-apis.learningfuze.com/sgt/delete',
-			method: 'post',
-			data: {
-				'api_key': 'bDGvisalij',
-				'student_id': id
-			},
+			url: '/api/grades?student_id=' +id,
+			method: 'delete',
+			// data: {
+			// 	'api_key': 'bDGvisalij',
+			// 	'student_id': id
+			// },
 			dataType: 'json',
 			success: this.deleteDataSuccess,
 			error: this.handleError

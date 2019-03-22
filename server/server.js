@@ -10,6 +10,7 @@ const server = express();
 //middleware
 server.use(express.static( __dirname + '/html' ));
 server.use(express.urlencoded( {extended: false} )); //have express pull body data that is urlencoded and place it into an object called "body"
+// server.use(express.json()); //used for things like axios
 
 //make an endpoint to handle retrieving the grades of all students
 server.get('/api/grades', (req, res) => { //when this server receives request at this port ('/api/grades') call this function
@@ -40,8 +41,45 @@ server.get('/api/grades', (req, res) => { //when this server receives request at
     })
 });
 
-server.post('/api/grades', (request, response) => {
+// INSERT INTO `grades` SET `surname`="Stark", `givenname`="Tony", `course`="Business", `grade`=100, `added`=NOW();
+// INSERT INTO `grades` (`surname`, `givenname`, `course`, `grade`) VALUES ("Stark", "Tony", "Business", 100), ("Holmes", "Sherlock", "Investigation", 90);
 
+server.post('/api/grades', (request, response) => {
+    //check the body object and see if any data was not sent
+    if(request.body.name === undefined || request.body.course === undefined || request.body.grade === undefined) {
+        //respond to the client with an appropriate error message
+        response.send({
+            success: false,
+            error: 'invalid name, course, or grade'
+        });
+        return;
+    }
+    //connect to the database
+    db.connect(() => {
+        //creating a name - splitting first and last names
+        const name = request.body.name.split(" ");
+
+        //creating a string, concatenating all the information
+        //"joe dei rossi" -> ['joe', 'dei', 'rossi'] -> ['dei', 'rossi'] -> 'dei rossi'
+        const query = 'INSERT INTO `grades` SET `surname`="'+name.slice(1).join(' ')+'", `givenname`="'+name[0]+'", `course`="'+request.body.course+'", `grade`='+request.body.grade+', `added`=NOW()';
+        // console.log(query);
+        // response.send(query);
+
+        db.query(query, (error, result) => {
+            if(!error){
+                // console.log(result.insertId);
+                response.send({
+                    success: true,
+                    new_id: result.insertId
+                })
+            } else {
+                response.send({
+                    success: false,
+                    error //es6 structuring so you can just say error
+                })
+            }
+        })
+    })
 });
 
 server.listen(3001,()=>{
